@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'injection.dart';
 import 'message_service.dart';
-import 'service_locator.dart';
 
 void main() {
-  // 1. تشغيل المحقن قبل تشغيل التطبيق
-  setupLocator();
+  // تأكد من تهيئة التبعيات قبل تشغيل التطبيق
+  WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies();
   runApp(const MyApp());
 }
 
@@ -14,25 +15,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: HomeScreen());
+    return MaterialApp(
+      title: 'DI with Injectable',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const HomeScreen(),
+    );
   }
 }
 
 class HomeScreen extends StatelessWidget {
-  // 2. استدعاء الخدمة من المحقن مباشرة
-  final messageService = getIt<MessageService>();
-
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // جلب الخدمة من getIt
+    final messageService = getIt<MessageService>();
+
     return Scaffold(
       appBar: AppBar(title: const Text("DI Example")),
       body: Center(
-        child: Text(
-          messageService.getGreeting(), // استخدام الخدمة
-          style: const TextStyle(fontSize: 20),
-          textAlign: TextAlign.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.bolt, size: 100, color: Colors.amber),
+            const SizedBox(height: 20),
+            Text(
+              messageService.getGreeting(),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     );
